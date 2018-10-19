@@ -97,3 +97,114 @@ Exponiendo puerto 80 a través del puerto 1080
 gst    > `con la separacion de dos puntos ":", el primer puerto hace referencia al puerto del host y el segundo puerto hace referencia al contenedor`
 4. ¿Cómo hago 'forward' al levantar un contenedor (docker run)?
     > `con el flag -p "8080:80"`
+
+---
+Ejercicio Linux, Makefile, Jenkins
+
+1. ¿Qué significa el comando -d?
+    > `Busca el directorio`
+2. ¿Porqué la sentencia comienza con @?
+    > `Para no mostrar la salida`
+3. ¿Para qué sirve el comando mkdir?
+    > `Crea un directorio`
+4. Explicar lo que hace la función mkdir_deploy_dir
+    > `Verifica si existe una carpeta de cierto nombre y si no existe la crea`
+5. ¿Para qué sirve el uso de \?
+    > `Permite escribir codigo a la otra linea para el comando`
+6. ¿Para qué sirve el uso de &&?
+    >   `Ejecuta el siguiente comando sólo si el anterior tuvo éxito`
+7. ¿Qué función cumple usar los argumentos -rf?
+    >   `Eliminar todos los archivos y directorios sin tener que confirmar`
+8. Explicar lo que hace la función git_init (linea por linea)
+
+    ```javascript
+        define git_init //nombre de funcion
+            @cd $(GIT_BRANCH_DIR) && \ // entra a la carpeta resultante de GIT_BRANCH_DIR
+            rm -rf $(GIT_BRANCH_DIR)/.git && \ // Elimina el .git de la carpeta resultante de GIT_BRANCH_DIR
+            git init //Inicializa git
+        endef// final de la definicion de la funcion
+    ```
+
+9. ¿Para qué sirve el uso de eval?
+    >   `permite definir una variable temporal`
+10. ¿Para qué sirve el uso de shell?
+    >   `Para hacer uso del hardware del SO`
+11. ¿Para qué sirve el uso de git log --pretty=format:"%an"?
+    >   `Trae el nombre de los autores de los commits`
+12. ¿Cuál es la diferencia en usar git config y git config --global?
+    >   `git config nos permite obtener y establecer variables de configuración y git config --global git config lee y escribe en ~/.gitconfig`
+13. Explicar lo que hace la función git_config (línea por línea)
+
+    ```javascript
+        define git_config //nombre de la funcion
+            $(eval GIT_USER_NAME := $(shell git log --pretty=format:"%an" | head -n 1)) // se almacena en una variable temporal el nombre del ultimo autor del commit
+            $(eval GIT_USER_EMAIL := $(shell git log --pretty=format:"%ae" | head -n 1)) // se almacena en una variable temporal el correo del ultimo autor del commit
+            @cd $(GIT_BRANCH_DIR) && \ //entra a la carpeta de nombre de la variable
+            git config user.email "$(GIT_USER_EMAIL)" && \ // se define el nombre del autor de los commits
+            git config user.name "$(GIT_USER_NAME)"//se define el correo del autor de los commits
+        endef //fin de la funcion
+    ```
+14. ¿Para qué sirve el uso de awk?
+    > `Nos ayudar a leer y procesar texto`
+15. ¿Para qué sirve el uso de sed?
+    > `funciona bien con el procesamiento basado en caracteres`
+16. ¿Para qué sirve el uso de git log --pretty=format:"%an"?
+    > `trae el nombre de los autores de los commits`
+17. Explicar lo que hace la función git_add_remote_repository
+    ```javascript
+        define git_add_remote_repository //nombre de funcion
+            $(eval REPOSITORY := $(shell git remote -v | grep origin | grep '(push)'| awk '{print $$2}')) //se almacena nombre del repositorio
+            $(eval GIT_REPOSITORY_REMOTE := $(shell echo $(REPOSITORY) | sed 's%https://%https://$(GIT_PERSONAL_TOKEN)@%g')) // se almacena nombre del repositorio remoto con el patron asignado en sed
+            @cd $(GIT_BRANCH_DIR) && \ //se ubica en el directorio bajo el nombre de variable temporal
+            git remote add origin $(GIT_REPOSITORY_REMOTE)// se agrega al repositorio en remoto
+        endef // fin de la funcion
+    ```
+18. Explicar lo que hace la función create_branch_gh_pages
+    > `Se ubica en una carpeta y crea una rama`
+19. Explicar lo que hace la función copy_files_to_deploy
+    >  `copia todos los archivos en el directorio deploy/build al directorio temporal`
+20. Explicar lo que hace la función git_add
+    >   `se ubica en el directorio de nombre del la variable temporal y agrega los cambios al stage`
+21. Explicar lo que hace la función create_commit (línea por línea)
+    ```javascript
+        define create_commit//nombre de la funcion
+            $(eval MESSAGE := $(shell git log --pretty=format:"%s" | head -n 1)) //se almacena el mensaje del ultimo commit
+            @cd $(GIT_BRANCH_DIR) && \ //se ubica en la carpeta raiz
+            git commit -m "$(MESSAGE)" //se hace el commit
+        endef//final funcion
+    ```
+22. Explicar lo que hace la función git_push (línea por línea)
+    ```javascript
+        define git_push//nombre de la funcion
+            @cd $(GIT_BRANCH_DIR) && \//se ubica en la carpeta raiz
+            git push origin $(GIT_BRANCH) --force//se hace un push forzado
+        endef//final de la funcion
+    ```
+23. Explicar lo que hace la función clean_workspace
+    >   `Elimina la carpeta temporal`
+24. ¿Para qué sirve el uso de ifeq?
+    >   `Inicia la condicion para ejecutar lineas en el makefile`
+25. ¿Para qué sirve el uso de strip?
+    >   `Descartas símbolos de archivos objeto`
+26. Explicar lo que hace la función show_deploy_url (línea por línea)
+    ```javascript
+        define show_deploy_url// nombre de la funcion
+            $(eval GIT_REPOSITORY_REMOTE := $(shell git remote -v | grep origin | grep '(push)'| awk '{print $2}')) //se almacena nombre del repo remoto
+            $(eval GIT_REPOSITORY_REMOTE_SSH := $(shell echo '$(GIT_REPOSITORY_REMOTE)' | grep 'git@')) // by ssh
+
+            $(ifeq ($(strip $(GIT_REPOSITORY_REMOTE_SSH)),), \//empieza condicional
+                $(eval GIT_USER_NAME := $(shell echo '$(GIT_REPOSITORY_REMOTE)' | cut -d "/" -f 1 | cut -d ":" -f 2)), \
+                $(eval GIT_USER_NAME := $(shell echo '$(GIT_REPOSITORY_REMOTE)' | cut -d "/" -f 4)) \
+            )
+
+            $(ifeq ($(strip $(GIT_REPOSITORY_REMOTE_SSH)),), \
+                $(eval GIT_REPOSITORY_NAME := $(shell echo '$(GIT_REPOSITORY_REMOTE)' | cut -d "/" -f 2)), \
+                $(eval GIT_REPOSITORY_NAME := $(shell echo '$(GIT_REPOSITORY_REMOTE)' | cut -d "/" -f 5 | sed "s/.git//g" | sed "s/(push)//g")) \
+            )
+
+            @echo ""
+            @echo "Publicado en: http://$(GIT_USER_NAME).github.io/$(GIT_REPOSITORY_NAME)"
+            @echo ""
+        endef
+    ```
+27. 

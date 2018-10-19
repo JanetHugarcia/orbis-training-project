@@ -1,4 +1,5 @@
-include Makefile-task.mk
+include ./makefiles/task.mk
+include ./makefiles/deploy-ghpages.mk
 
 export NAME ?= Harry Potter local
 NAME_IMAGE ?= marlonric/orbis-training-docker
