@@ -3,7 +3,7 @@
 DEPLOY_DIR = app/deploy
 BUILD_DIR = build
 GIT_BRANCH = gh-pages
-GIT_PERSONAL_TOKEN = aa5ff39ef35f10301a4413908ff1dfeb2606e659
+GIT_PERSONAL_TOKEN = 3b644847665d1ec116a2f151141bbbb3b85df84d
 GIT_BRANCH_DIR = $(PWD)/$(DEPLOY_DIR)/$(GIT_BRANCH)
 
 define mkdir_deploy_dir
@@ -11,7 +11,7 @@ define mkdir_deploy_dir
 endef
 
 define git_init
-	@cd $(GIT_BRANCH_DIR) && \	
+	@cd $(GIT_BRANCH_DIR) && \
 	 rm -rf $(GIT_BRANCH_DIR)/.git && \
 	 git init
 endef
@@ -62,7 +62,7 @@ define clean_workspace
 endef
 
 define show_deploy_url
-	$(eval GIT_REPOSITORY_REMOTE := $(shell git remote -v | grep origin | grep '(push)'| awk '{print $2}'))
+	$(eval GIT_REPOSITORY_REMOTE := $(shell git remote -v | grep origin | grep '(push)'| awk '{print $$2}'))
 	$(eval GIT_REPOSITORY_REMOTE_SSH := $(shell echo '$(GIT_REPOSITORY_REMOTE)' | grep 'git@'))
 
 	$(ifeq ($(strip $(GIT_REPOSITORY_REMOTE_SSH)),), \
@@ -82,14 +82,12 @@ endef
 
 deploy.ghpages:
 	$(call mkdir_deploy_dir)
-	# $(call git_init)
-	# $(call git_config)
-	# $(call git_add_remote_repository)
-	# $(call create_branch_gh_pages)
-	# $(call copy_files_to_deploy)
-	# $(call git_add)
-	# $(call create_commit)
-	# $(call git_push)
-	# $(call clean_workspace)
-	# $(call show_deploy_url)
-
+	$(call git_init)
+	$(call git_config)
+	$(call git_add_remote_repository)
+	$(call create_branch_gh_pages)
+	$(call copy_files_to_deploy)
+	$(call git_add)
+	$(call create_commit)
+	$(call git_push)
+	$(call clean_workspace)
