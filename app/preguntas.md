@@ -207,4 +207,18 @@ Ejercicio Linux, Makefile, Jenkins
             @echo ""
         endef
     ```
-27. 
+### CLOUDFORMATION
+27. ¿Qué significa el argumento s3?
+    > Sirve para administrar buckets(crear, eliminar)
+28. ¿Qué significa el argumento --delete?
+    > Elimina archivos que no existen en el origen
+29. ¿Qué significa el argumento --acl?
+    > Se define los permisos de acceso al bucket
+30. ¿Qué significa el argumento --region?
+    > Se define la region donde se va a ubicar el bucket
+31. ¿Para qué sirve el comando aws?
+    > Es para usar la CLI de aws y administrar los AWS Services
+32. Explicar lo que hace la función deploy_bucket
+    > Se sincroniza los archivos en local hacia el bucket, si hay archivos diferentes en el bucket, serán eliminados, se brinda accesos de lectura publica y se define la region para el bucket
+33. Explicar lo que hace la función show_deploy_url
+    > Mostrar la url del site después de haberse hecho el deploy

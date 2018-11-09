@@ -19,4 +19,12 @@ resources:
 	@echo "Hola arecursos!"
 	@echo ${DOCKER_IMAGE}
 
+curl:
+	echo 'Hola recursos!'
+
+project-workspace:
+	docker rm -f workspace
+	docker create -v /app/ --name workspace alpine
+	docker cp ./ workspace:/app/
+	
 .PHONY: resources
