@@ -1,34 +1,34 @@
 #!/usr/bin/env groovy
 
 pipeline {
-    // parameters {
-    //     choice(
-    //         name: 'DEPLOY',
-    //         choices: ["gh-page","aws"],
-    //         description: "Ambiente de despliegue")
-    // }
+    parameters {
+        choice(
+            name: 'DEPLOY',
+            choices: ["gh-page","aws"],
+            description: "Ambiente de despliegue")
+    }
     agent any
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
         stage('Build') {
             steps {
+                sh 'make project-workspace'
                 sh 'make install'
-                sh 'make project_workspace'
             }
         }
         stage('Test') {
             steps {
                 sh 'make start'
+                sh 'make curl'
             }
         }
         stage('Deploy') {
             steps {
                 sh 'make release'
-                sh 'make deploy.ghpages'
+                if ("${DESIRED_COUNT}" == "aws") {
+                    sh 'make deploy.aws'
+                } else {
+                    sh 'make deploy.ghpages'
+                }
             }
         }
     }
