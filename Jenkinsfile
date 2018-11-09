@@ -23,12 +23,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'make release'
-                if ("${DESIRED_COUNT}" == "aws") {
-                    sh 'make deploy.aws'
-                } else {
-                    sh 'make deploy.ghpages'
-                }
+                sh 'make deploy.aws'
             }
         }
     }
